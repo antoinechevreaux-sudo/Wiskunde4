@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#FBF7F0">
+<title>Wiskunde 4</title>
+<style>
+@font-face{font-family:Outfit;src:url(Outfit.ttf) format('truetype');font-weight:100 900;font-display:block}
+:root{--bg:#FBF7F0;--card:#fff;--ink:#1d2433;--mute:#6b7383;--line:#e7e3da;--or:#e0701a;--or2:#f6a04d;--orl:#fff1e4;
+--bl:#3b7be0;--bll:#eaf2ff;--gr:#2f9e63;--grl:#e6f6ed;--pu:#8a55d6;--pul:#f3ecff;--rd:#d64545;--rdl:#fdeaea}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg);color:var(--ink);font-family:Outfit,system-ui,sans-serif;font-size:16px}
+body{overscroll-behavior:none}
+#app{max-width:520px;margin:0 auto;min-height:100%;padding:18px 18px 96px}
+button{font:inherit;color:inherit;border:none;background:none;cursor:pointer}
+i.nl,.nl{font-style:italic;color:#9a4a0b}
+h1{font-size:26px;font-weight:700}
+h2{font-size:21px;font-weight:700;line-height:1.2}
+.mute{color:var(--mute);font-size:14px}
+.card{background:var(--card);border-radius:20px;padding:16px;box-shadow:0 1px 0 var(--line);margin-bottom:14px}
+.btn{display:block;width:100%;background:var(--or);color:#fff;font-weight:700;font-size:17px;border-radius:16px;padding:15px;text-align:center}
+.btn.dark{background:var(--ink)}
+.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--line)}
+.btn:disabled{opacity:.4}
+.row{display:flex;gap:10px;align-items:center}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.x{width:38px;height:38px;border-radius:12px;background:#fff;font-size:20px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 0 var(--line)}
+.pbar{flex:1;display:flex;gap:5px}.pbar span{flex:1;height:6px;border-radius:3px;background:var(--line)}.pbar .on{background:var(--or)}
+/* home */
+.hero{display:flex;gap:16px;align-items:center}
+.ring{position:relative;width:118px;height:118px;flex:none}
+.ring .pct{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring .pct b{font-size:28px}.ring .pct small{font-size:11px;color:var(--mute)}
+.stat b{font-size:20px}.stat{font-size:13px;color:var(--mute);margin-bottom:6px}
+.map{display:grid;grid-template-columns:repeat(8,1fr);gap:5px;margin-top:14px}
+.map div{aspect-ratio:1;border-radius:5px;background:var(--line)}
+.legend{display:flex;gap:12px;font-size:11px;color:var(--mute);margin-top:8px;flex-wrap:wrap}
+.legend span::before{content:"";display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:4px;vertical-align:-1px;background:var(--c)}
+.today{background:var(--ink);color:#fff;border-radius:20px;padding:16px;margin-bottom:14px}
+.today p{opacity:.8;font-size:14px;margin:4px 0 12px}
+.block{border-radius:18px;padding:14px;margin-bottom:10px}
+.bhead{display:flex;align-items:center;gap:12px}
+.ico{width:42px;height:42px;border-radius:13px;color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:18px;flex:none}
+.bt{font-weight:700;font-size:17px}.bs{font-size:12px;color:var(--mute)}
+.bprog{height:6px;background:rgba(0,0,0,.08);border-radius:3px;margin-top:7px}.bprog i{display:block;height:6px;border-radius:3px}
+.lessons{margin-top:10px;display:none}.block.open .lessons{display:block}
+.les{display:flex;align-items:center;gap:10px;background:#fff;border-radius:12px;padding:10px 12px;margin-top:6px;width:100%;text-align:left}
+.les .dot{width:12px;height:12px;border-radius:50%;flex:none;background:var(--line)}
+.les .lt{flex:1;font-size:15px}.les .lt small{display:block;color:var(--mute);font-size:12px}
+.les.lock{opacity:.5}
+.tag{font-size:11px;padding:3px 8px;border-radius:10px;background:var(--line);color:var(--mute)}
+/* steps */
+.q{font-size:20px;font-weight:700;line-height:1.25;margin-bottom:6px}
+.txt{font-size:16px;line-height:1.45;margin-bottom:10px}
+.more{background:#f6f3ee;border-radius:12px;padding:12px;font-size:15px;line-height:1.45;margin-top:8px}
+.morebtn{font-size:13px;color:var(--or);font-weight:600;margin-top:6px}
+.vis{margin:12px 0;display:flex;justify-content:center;flex-direction:column;align-items:center}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.opt{border:2px solid var(--line);background:#fff;border-radius:14px;padding:14px 8px;font-size:19px;font-weight:700;text-align:center}
+.opt.ok{border-color:var(--gr);background:var(--grl);color:var(--gr)}
+.opt.bad{border-color:var(--rd);background:var(--rdl);color:var(--rd)}
+.fb{border-radius:14px;padding:12px 14px;margin:12px 0;font-size:15px;line-height:1.45}
+.fb.ok{background:var(--grl);color:#1f6e44}.fb.bad{background:var(--rdl);color:#8f2b2b}
+.fb b{display:block;margin-bottom:3px}
+.numin{display:flex;gap:8px;margin:14px 0}
+.numin input{flex:1;min-width:0;font:inherit;font-size:22px;font-weight:700;padding:12px 14px;border-radius:14px;border:2px solid var(--line);background:#fff;color:var(--ink)}
+.numin input:focus{outline:none;border-color:var(--or)}
+.foot{position:fixed;left:0;right:0;bottom:0;padding:12px 18px calc(14px + env(safe-area-inset-bottom));background:linear-gradient(transparent,var(--bg) 30%)}
+.foot.navd{bottom:62px}
+.foot>div{max-width:484px;margin:0 auto;display:flex;flex-direction:column;gap:8px}
+/* place table */
+.pt{display:flex;gap:4px;width:100%}
+.pt .col{flex:1;min-width:0;background:#fff;border-radius:12px;border:2px solid var(--line);text-align:center;padding:6px 1px}
+.pt .h{font-weight:700;font-size:15px}.pt .v{font-size:10px;color:var(--mute)}
+.pt .d{font-size:28px;font-weight:700;margin:4px 0}
+.pt .pm{display:flex;flex-direction:column;align-items:center;gap:4px}
+.pt .pm button{width:38px;height:32px;border-radius:9px;background:var(--orl);color:var(--or);font-weight:700;font-size:18px}
+.pt .dots{display:flex;flex-wrap:wrap;justify-content:center;gap:2px;min-height:24px;margin:2px 4px}
+.pt .dots i{width:7px;height:7px;border-radius:2px;background:var(--c)}
+.big{font-size:30px;font-weight:700;text-align:center;letter-spacing:.5px;margin:6px 0}
+.chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;align-items:center;font-size:18px;font-weight:700}
+.chips span.c{padding:6px 10px;border-radius:10px;color:#fff}
+.ordr{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:10px 0}
+.ordr button{border:2px solid var(--line);background:#fff;border-radius:12px;padding:10px 14px;font-size:18px;font-weight:700}
+.ordr button.used{opacity:.3}
+.slot{min-height:52px;border:2px dashed var(--line);border-radius:14px;display:flex;flex-wrap:wrap;gap:6px;padding:6px;align-items:center;justify-content:center;font-weight:700;font-size:17px}
+.slot span{background:var(--orl);color:var(--or);border-radius:10px;padding:6px 10px}
+input[type=range]{width:100%;accent-color:var(--or);height:30px}
+/* nav */
+.nav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:8px 0 calc(8px + env(safe-area-inset-bottom))}
+.nav button{display:flex;flex-direction:column;align-items:center;font-size:11px;color:var(--mute);gap:2px;padding:2px 10px}
+.nav button b{font-size:20px;font-weight:600;line-height:1}
+.nav button.on{color:var(--or)}
+/* tutor */
+.chat{display:flex;flex-direction:column;gap:10px;padding-bottom:190px}
+.msg{max-width:86%;padding:11px 14px;border-radius:18px;font-size:15px;line-height:1.45;white-space:pre-wrap}
+.me{background:var(--ink);color:#fff;margin-left:auto;border-bottom-right-radius:5px}
+.bot{background:#fff;border-bottom-left-radius:5px;box-shadow:0 1px 0 var(--line)}
+.bot .nl,.bot em{color:#9a4a0b}
+.ctx{font-size:12px;color:var(--mute);background:#fff;border-radius:12px;padding:8px 12px}
+.tchips{display:flex;gap:6px;flex-wrap:wrap}
+.tchips button{font-size:13px;border:1.5px solid var(--or);color:var(--or);border-radius:20px;padding:6px 11px;background:#fff}
+.tin{display:flex;gap:8px}
+.tin textarea{flex:1;font:inherit;font-size:15px;border-radius:18px;border:1.5px solid var(--line);padding:10px 14px;resize:none;height:46px;background:#fff;color:var(--ink)}
+.tin button{width:46px;height:46px;border-radius:50%;background:var(--or);color:#fff;font-size:20px;flex:none}
+/* glossary */
+.term{display:flex;align-items:center;gap:10px;background:#fff;border-radius:14px;padding:11px 14px;margin-bottom:8px}
+.term .w{flex:1}.term .w b{font-size:17px;color:#9a4a0b;font-style:italic;font-weight:600}.term .w small{display:block;color:var(--mute);font-size:14px}
+.spk{width:38px;height:38px;border-radius:50%;background:var(--orl);color:var(--or);font-size:17px}
+.field{width:100%;font:inherit;font-size:15px;padding:12px;border-radius:12px;border:1.5px solid var(--line);margin:8px 0;background:#fff;color:var(--ink)}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:14px;font-size:14px;z-index:9;max-width:90%}
+.done{text-align:center;padding-top:30px}
+.done .bigpct{font-size:52px;font-weight:800;color:var(--or)}
+svg text{font-family:Outfit,system-ui,sans-serif}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+"use strict";
+/* ============ utilidades ============ */
+const $ = s => document.querySelector(s);
+const NB = "\u00A0";
+const fmt = n => { const [i, d] = String(n).split("."); return i.replace(/\B(?=(\d{3})+(?!\d))/g, NB) + (d ? "," + d : ""); };
+const dec = n => String(+n.toFixed(3)).replace(".", ",");
+const rnd = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const today = () => { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
+const addDays = (s, n) => { const d = new Date(s + "T12:00:00"); d.setDate(d.getDate() + n); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const parseNum = s => { s = String(s).replace(/[\s  .]/g, "").replace(",", "."); return s === "" ? NaN : Number(s); };
+function toast(m) { const t = document.createElement("div"); t.className = "toast"; t.textContent = m; document.body.appendChild(t); setTimeout(() => t.remove(), 2400); }
+window.w4Toast = toast;
+function speak(txt) {
+  try { if (window.W4Native && W4Native.speak) { W4Native.speak(txt); return; } } catch (e) {}
+  try { const u = new SpeechSynthesisUtterance(txt); u.lang = "nl-BE"; u.rate = .9; speechSynthesis.cancel(); speechSynthesis.speak(u); } catch (e) { toast("Pronunciación no disponible"); }
+}
+
+/* ============ estado ============ */
+const KEY = "w4state";
+let S;
+function load() {
+  try { S = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { S = {}; }
+  S.les = S.les || {}; S.errors = S.errors || []; S.days = S.days || []; S.chat = S.chat || [];
+}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+function markDay() { const t = today(); if (!S.days.includes(t)) { S.days.push(t); save(); } }
+function getKey() { try { return localStorage.getItem("w4key") || ""; } catch (e) { return ""; } }
+function setKey(k) { try { localStorage.setItem("w4key", k); } catch (e) {} }
+load();
+
+/* ============ visuales (SVG) ============ */
+function barSVG(n, k, opts = {}) {
+  const W = opts.w || 300, H = opts.h || 46, c = opts.color || "#f6a04d";
+  let s = `<svg viewBox="-2 -2 ${W + 4} ${H + 4}" width="100%" style="max-width:${W + 4}px">`;
+  for (let i = 0; i < n; i++) {
+    const x = i * W / n;
+    s += `<rect data-i="${i}" x="${x}" y="0" width="${W / n}" height="${H}" fill="${i < k ? c : "#fff"}" stroke="#1d2433" stroke-width="2"/>`;
+  }
+  return s + `<rect x="0" y="0" width="${W}" height="${H}" rx="6" fill="none" stroke="#1d2433" stroke-width="2.5"/></svg>`;
+}
+function lineSVG(min, max, ticks, opt = {}) {
+  const W = 320, L = 26, R = 294, y = 44;
+  const X = v => L + (v - min) / (max - min) * (R - L);
+  let s = `<svg class="nl-line" viewBox="0 0 ${W} 90" width="100%" style="touch-action:none;max-width:420px">`;
+  s += `<line x1="${L}" y1="${y}" x2="${R}" y2="${y}" stroke="#1d2433" stroke-width="3" stroke-linecap="round"/>`;
+  for (let v = min; v <= max + 1e-9; v += ticks) {
+    const big = Math.abs((v - min) % (ticks * (opt.labelEvery || 1))) < 1e-9 || v === max;
+    s += `<line x1="${X(v)}" y1="${y - (big ? 9 : 5)}" x2="${X(v)}" y2="${y + (big ? 9 : 5)}" stroke="#1d2433" stroke-width="2"/>`;
+    if (big && opt.labels !== false) s += `<text x="${X(v)}" y="${y + 26}" font-size="${opt.fs || 10}" text-anchor="middle" fill="#6b7383">${fmt(v)}</text>`;
+  }
+  if (opt.mark != null) s += `<path d="M${X(opt.mark)} ${y - 8} l-7 -14 h14 z" fill="#e0701a"/>`;
+  if (opt.point != null) s += `<circle cx="${X(opt.point)}" cy="${y}" r="7" fill="#e0701a"/>` + (opt.pointLabel ? `<text x="${X(opt.point)}" y="${y - 14}" font-size="12" font-weight="700" text-anchor="middle" fill="#e0701a">${opt.pointLabel}</text>` : "");
+  return s + `</svg>`;
+}
+function gridSVG(filled, opt = {}) {
+  const c = 26; let s = `<svg viewBox="-2 -2 ${c * 10 + 4} ${c * 10 + 4}" width="100%" style="max-width:270px;touch-action:manipulation">`;
+  for (let r = 0; r < 10; r++) for (let q = 0; q < 10; q++) {
+    const i = r * 10 + q;
+    s += `<rect data-i="${i}" data-r="${r}" x="${q * c}" y="${r * c}" width="${c}" height="${c}" fill="${filled.has ? (filled.has(i) ? "#f6a04d" : "#fff") : (i < filled ? "#f6a04d" : "#fff")}" stroke="#c9c3b8" stroke-width="1"/>`;
+  }
+  for (let r = 0; r <= 10; r++) s += `<line x1="0" y1="${r * c}" x2="${c * 10}" y2="${r * c}" stroke="#1d2433" stroke-width="${r % 10 ? 1.2 : 2.5}"/>`;
+  s += `<rect x="0" y="0" width="${c * 10}" height="${c * 10}" fill="none" stroke="#1d2433" stroke-width="2.5"/>`;
+  return s + `</svg>`;
+}
+const COLS = [
+  { k: "TD", nl: "tienduizendtallen", es: "decenas de millar", v: 10000, c: "#8a55d6" },
+  { k: "D", nl: "duizendtallen", es: "millares", v: 1000, c: "#3b7be0" },
+  { k: "H", nl: "honderdtallen", es: "centenas", v: 100, c: "#2f9e63" },
+  { k: "T", nl: "tientallen", es: "decenas", v: 10, c: "#e0701a" },
+  { k: "E", nl: "eenheden", es: "unidades", v: 1, c: "#d64545" }];
+function placeTable(n, editable) {
+  const d = String(n).padStart(5, "0").split("").map(Number);
+  return `<div class="pt">${COLS.map((c, i) => `<div class="col" style="--c:${c.c}">
+    <div class="h" style="color:${c.c}">${c.k}</div><div class="v">${fmt(c.v)}</div>
+    <div class="d">${d[i]}</div><div class="dots">${"<i></i>".repeat(d[i])}</div>
+    ${editable ? `<div class="pm"><button data-c="${i}" data-d="1">+</button><button data-c="${i}" data-d="-1">−</button></div>` : ""}</div>`).join("")}</div>`;
+}
+function chipsSplit(n) {
+  const d = String(n).padStart(5, "0").split("").map(Number);
+  const parts = d.map((x, i) => x ? `<span class="c" style="background:${COLS[i].c}">${fmt(x * COLS[i].v)}</span>` : null).filter(Boolean);
+  return `<div class="big">${fmt(n)}</div><div class="chips">= ${parts.join(" + ")}</div>`;
+}
+
+/* ============ programa ============ */
+const T = (nl, es) => ({ nl, es });
+const BLOCKS = [
+  { id: "getal", nl: "Getalbegrip", es: "Comprensión de los números", ico: "½", c: "#e0701a", l: "#fff1e4", phase: 1 },
+  { id: "bew", nl: "Bewerkingen", es: "Operaciones", ico: "×", c: "#3b7be0", l: "#eaf2ff", phase: 2 },
+  { id: "meten", nl: "Metend rekenen", es: "Medidas", ico: "cm", c: "#2f9e63", l: "#e6f6ed", phase: 3 },
+  { id: "meet", nl: "Meetkunde", es: "Geometría", ico: "▲", c: "#8a55d6", l: "#f3ecff", phase: 4 }];
+
+const LESSONS = [];
+function L(o) { LESSONS.push(o); }
+
+/* ---- Getalbegrip (fase 1, disponible) ---- */
+L({ id: "positie", b: "getal", nl: "De positietabel", es: "Números hasta 100 000",
+  terms: [T("de positietabel", "la tabla de valor posicional"), T("de eenheden (E)", "las unidades"), T("de tientallen (T)", "las decenas"), T("de honderdtallen (H)", "las centenas"), T("de duizendtallen (D)", "los millares"), T("de tienduizendtallen (TD)", "las decenas de millar")],
+  steps: () => [
+    { t: "info", q: "Cada columna vale 10 veces más", txt: "En la <i class='nl'>positietabel</i> cada columna vale <b>10 veces</b> la de su derecha.", vis: () => placeTable(42305),
+      more: "Lee el 42 305 así: 4 <i class='nl'>tienduizendtallen</i> (40 000), 2 <i class='nl'>duizendtallen</i> (2 000), 3 <i class='nl'>honderdtallen</i> (300), 0 <i class='nl'>tientallen</i> y 5 <i class='nl'>eenheden</i>. El 0 es importante: guarda el sitio de la columna vacía." },
+    { t: "build", q: "Construye el número " + fmt(3204), target: 3204, why: "3 D + 2 H + 0 T + 4 E = 3 204. La T queda a 0." },
+    { t: "build", q: "Ahora construye " + fmt(40517), target: 40517, why: "4 TD + 0 D + 5 H + 1 T + 7 E." },
+    { t: "mcq", q: "¿Cuánto vale el 7 en " + fmt(72015) + "?", opts: [fmt(70000), fmt(7000), "700", "7"], a: fmt(70000), vis: () => placeTable(72015), why: "El 7 está en la columna TD: 7 × 10 000 = 70 000." },
+    { t: "mcq", q: "10 <i class='nl'>tientallen</i> son…", opts: ["1 honderdtal", "1 duizendtal", "10 eenheden", "100 eenheden"], a: "1 honderdtal", why: "10 × 10 = 100: diez decenas forman una centena. Por eso al llegar a 10 en una columna «saltas» a la siguiente.",
+      more: "Es el mismo mecanismo en todas las columnas: 10 E = 1 T, 10 T = 1 H, 10 H = 1 D, 10 D = 1 TD. Y 10 TD = 100 000, el primer número de 6 cifras." }],
+  gen: () => { let n, i, d; do { n = rnd(10000, 99999); i = rnd(0, 4); d = String(n)[i]; } while (d === "0" || String(n).split(d).length !== 2);
+    return { t: "num", q: "¿Cuánto vale la cifra " + d + " en " + fmt(n) + "?", vis: () => placeTable(n), a: +d * COLS[i].v, why: "Está en " + COLS[i].k + ": " + d + " × " + fmt(COLS[i].v) + " = " + fmt(+d * COLS[i].v) + "." }; } });
+
+L({ id: "splitsen", b: "getal", nl: "Splitsen", es: "Descomponer números",
+  terms: [T("splitsen", "descomponer"), T("samenstellen", "componer"), T("het getal", "el número"), T("het cijfer", "la cifra")],
+  steps: () => [
+    { t: "info", q: "<i class='nl'>Splitsen</i>: cada cifra, su valor", txt: "Separa el número en el valor de cada columna.", vis: () => chipsSplit(45306),
+      more: "Ojo: <i class='nl'>het getal</i> es el número entero (45 306) y <i class='nl'>het cijfer</i> es cada símbolo (4, 5, 3, 0, 6). No hay sumando para la T porque su cifra es 0." },
+    { t: "num", q: fmt(28041) + " = 20" + NB + "000 + 8" + NB + "000 + ▢ + 1", a: 40, vis: () => placeTable(28041), why: "La T tiene un 4: vale 40." },
+    { t: "num", q: "6 TD + 3 H + 9 E = ▢", a: 60309, why: "60 000 + 300 + 9 = 60 309. Las columnas D y T llevan 0." },
+    { t: "mcq", q: "¿Cuál es 50" + NB + "000 + 700 + 20?", opts: [fmt(50720), fmt(5720), fmt(57200), fmt(50072)], a: fmt(50720), why: "5 TD, 0 D, 7 H, 2 T, 0 E → 50 720." },
+    { t: "num", q: fmt(73580) + " = 73 D + ▢ H + 8 T", a: 5, why: "73 580 = 73 000 + 500 + 80. Puedes agrupar columnas: 73 <i class='nl'>duizendtallen</i> = 73 000.",
+      more: "Partir un número de formas distintas ayuda a calcular de cabeza: 73 580 también es 735 H + 8 T, o 7 358 T." }],
+  gen: () => { const d = [rnd(1, 9), rnd(0, 9), rnd(0, 9), rnd(0, 9), rnd(0, 9)]; if (Math.random() < .5) d[rnd(1, 4)] = 0;
+    const n = +d.join(""); const parts = d.map((x, i) => x ? fmt(x * COLS[i].v) : null).filter(Boolean);
+    return { t: "num", q: parts.join(" + ") + " = ▢", a: n, why: "Pon cada sumando en su columna: " + fmt(n) + "." }; } });
+
+L({ id: "getallenas", b: "getal", nl: "De getallenas", es: "La recta numérica",
+  terms: [T("de getallenas", "la recta numérica"), T("het streepje", "la marca, la rayita"), T("situeren", "situar")],
+  steps: () => [
+    { t: "info", q: "Mira el tamaño del salto", txt: "En una <i class='nl'>getallenas</i>, primero averigua cuánto vale cada salto entre <i class='nl'>streepjes</i>.", vis: () => lineSVG(0, 100000, 10000, { labelEvery: 5, fs: 10 }),
+      more: "Aquí hay 10 saltos de 0 a 100 000: cada salto vale 100 000 ÷ 10 = 10 000. Solo están escritos 0, 50 000 y 100 000: cuenta los saltos. Si una recta no tiene todos los números escritos, calcula el salto así: (último − primero) ÷ número de saltos." },
+    { t: "line", q: "Arrastra el punto hasta " + fmt(70000), min: 0, max: 100000, tick: 10000, target: 70000, tol: 2500, labelEvery: 5, why: "7 saltos de 10 000 desde el 0." },
+    { t: "line", q: "Ahora sitúa " + fmt(46000), min: 40000, max: 50000, tick: 1000, target: 46000, tol: 300, labelEvery: 5, why: "De 40 000 a 50 000 hay 10 saltos de 1 000: 46 000 está a 6 saltos." },
+    { t: "mcq", q: "¿Qué número marca la flecha?", vis: () => lineSVG(0, 10000, 500, { mark: 7500, labelEvery: 4 }), opts: [fmt(7500), fmt(7050), fmt(75000), fmt(8500)], a: fmt(7500), why: "Cada salto vale 500 (hay 4 saltos de 0 a 2 000). La flecha está a mitad de camino entre 7 000 y 8 000." },
+    { t: "line", q: "Sitúa " + fmt(25500), min: 20000, max: 30000, tick: 1000, target: 25500, tol: 300, labelEvery: 5, why: "Justo a mitad de camino entre 25 000 y 26 000." }],
+  gen: () => { const v = rnd(1, 19) * 500; const o = new Set([fmt(v)]); while (o.size < 4) o.add(fmt(Math.max(0, v + pick([-1500, -1000, -500, 500, 1000, 1500]))));
+    return { t: "mcq", q: "¿Qué número marca la flecha?", vis: () => lineSVG(0, 10000, 500, { mark: v, labelEvery: 4 }), opts: [...o], a: fmt(v), why: "Cada salto vale 500: la flecha está en " + fmt(v) + "." }; } });
+
+L({ id: "vergelijken", b: "getal", nl: "Vergelijken en ordenen", es: "Comparar y ordenar",
+  terms: [T("vergelijken", "comparar"), T("ordenen", "ordenar"), T("groter dan (>)", "mayor que"), T("kleiner dan (<)", "menor que"), T("gelijk aan (=)", "igual a")],
+  steps: () => [
+    { t: "info", q: "La primera cifra distinta decide", txt: "Compara columna a columna, de izquierda a derecha.", vis: () => `<div class="big">48${NB}<b style="color:#e0701a">2</b>13 &nbsp;&gt;&nbsp; 48${NB}<b style="color:#e0701a">1</b>32</div><div class="mute">TD y D iguales · en H: 2 &gt; 1</div>`,
+      more: "<i class='nl'>groter dan</i> (&gt;) y <i class='nl'>kleiner dan</i> (&lt;): la boca abierta del signo mira siempre al número más grande. Si los números tienen distinta cantidad de cifras, gana el que tiene más." },
+    { t: "mcq", q: fmt(39999) + " ▢ " + fmt(40001), opts: ["<", ">", "="], a: "<", why: "En TD: 3 < 4. Lo demás ya no importa." },
+    { t: "mcq", q: fmt(70450) + " ▢ " + fmt(70405), opts: ["<", ">", "="], a: ">", why: "Igual hasta H (4). En T: 5 > 0." },
+    { t: "order", q: "Ordena de menor a mayor (<i class='nl'>ordenen</i>)", items: [21300, 12300, 21030, 12030], why: "12 030 < 12 300 < 21 030 < 21 300." },
+    { t: "mcq", q: "¿Cuál es el más grande?", opts: [fmt(99099), fmt(90999), fmt(99909), fmt(99990)], a: fmt(99990), why: "Todos empiezan por 9. En D: 9 en tres de ellos; en H: 9 en dos; en T gana 99 990." }],
+  gen: () => { const a = rnd(10000, 99999); let b = a; if (Math.random() > .12) { while (b === a) { const s = String(a).split(""); s[rnd(1, 4)] = String(rnd(0, 9)); b = +s.join(""); } }
+    return { t: "mcq", q: fmt(a) + " ▢ " + fmt(b), opts: ["<", ">", "="], a: a < b ? "<" : a > b ? ">" : "=", why: "Busca la primera cifra distinta, de izquierda a derecha." }; } });
+
+L({ id: "afronden", b: "getal", nl: "Afronden", es: "Redondear",
+  terms: [T("afronden", "redondear"), T("ongeveer", "aproximadamente"), T("naar boven", "hacia arriba"), T("naar beneden", "hacia abajo")],
+  steps: () => [
+    { t: "info", q: "¿A qué «número redondo» estás más cerca?", txt: "4 370 está entre 4 300 y 4 400, más cerca de 4 400.", vis: () => lineSVG(4300, 4400, 10, { point: 4370, pointLabel: fmt(4370), labelEvery: 10 }),
+      more: "Regla: mira la cifra de la columna siguiente a la que redondeas. Si es 0–4, <i class='nl'>naar beneden</i>; si es 5–9, <i class='nl'>naar boven</i>. Para centenas, mira las decenas: 4 3<b>7</b>0 → 7 ≥ 5 → 4 400." },
+    { t: "mcq", q: "<i class='nl'>Afronden</i> 2 640 a la centena", vis: () => lineSVG(2600, 2700, 10, { point: 2640, pointLabel: fmt(2640), labelEvery: 10 }), opts: [fmt(2600), fmt(2700), fmt(2640), fmt(3000)], a: fmt(2600), why: "La decena es 4 (< 5): hacia abajo." },
+    { t: "mcq", q: "Redondea " + fmt(38750) + " al millar", opts: [fmt(38000), fmt(39000), fmt(38700), fmt(40000)], a: fmt(39000), why: "Para millares mira las centenas: 7 ≥ 5 → hacia arriba." },
+    { t: "mcq", q: "Redondea " + fmt(6450) + " a la centena", opts: [fmt(6400), fmt(6500), fmt(6000), fmt(6450)], a: fmt(6500), why: "Justo en el medio (5) se redondea <i class='nl'>naar boven</i>." },
+    { t: "mcq", q: "Un coche cuesta 23 890 €. Cuesta <i class='nl'>ongeveer</i>…", opts: [fmt(23000) + " €", fmt(24000) + " €", fmt(20000) + " €", fmt(23900) + " €"], a: fmt(24000) + " €", why: "Al millar: las centenas son 8 → 24 000 €." }],
+  gen: () => { const toK = Math.random() < .5; const u = toK ? 1000 : 100; const n = rnd(1000, 99999); const r = Math.round(n / u) * u;
+    return { t: "num", q: "Redondea " + fmt(n) + " " + (toK ? "al millar" : "a la centena"), a: r, why: "Mira la cifra de " + (toK ? "las centenas" : "las decenas") + ": " + fmt(r) + "." }; } });
+
+L({ id: "breuken", b: "getal", nl: "Breuken", es: "Fracciones",
+  terms: [T("de breuk", "la fracción"), T("de teller", "el numerador"), T("de noemer", "el denominador"), T("de breukstreep", "la raya de fracción"), T("het geheel", "el entero"), T("gelijknamige breuken", "fracciones con el mismo denominador"), T("drie vijfde", "tres quintos")],
+  steps: () => [
+    { t: "info", q: "Partes iguales de un <i class='nl'>geheel</i>", txt: "Abajo, la <i class='nl'>noemer</i>: en cuántas partes iguales cortas. Arriba, la <i class='nl'>teller</i>: cuántas tomas.", vis: () => barSVG(5, 3) + `<div class="big" style="margin-top:8px">3/5 · <i class="nl" style="font-size:20px">drie vijfde</i></div>`,
+      more: "En neerlandés se lee como en español: «drie vijfde» = tres quintos. Excepciones útiles: 1/2 = <i class='nl'>een half</i>, 1/4 = <i class='nl'>een kwart</i>. Lo esencial: las partes tienen que ser <b>iguales</b>." },
+    { t: "frac", q: "Colorea 3/4 de la barra", n: 4, k: 3, why: "4 partes iguales (<i class='nl'>noemer</i>), 3 coloreadas (<i class='nl'>teller</i>)." },
+    { t: "frac", q: "Colorea 5/8", n: 8, k: 5, why: "8 partes, 5 coloreadas." },
+    { t: "mcq", q: "¿Qué <i class='nl'>breuk</i> está coloreada?", vis: () => barSVG(6, 2), opts: ["2/6", "6/2", "2/4", "4/6"], a: "2/6", why: "6 partes en total (abajo), 2 coloreadas (arriba)." },
+    { t: "mcq", q: "3/7 ▢ 5/7", vis: () => barSVG(7, 3, { h: 30 }) + "<div style='height:6px'></div>" + barSVG(7, 5, { h: 30 }), opts: ["<", ">", "="], a: "<", why: "<i class='nl'>Gelijknamige breuken</i> (mismo <i class='nl'>noemer</i>): gana la <i class='nl'>teller</i> mayor." },
+    { t: "mcq", q: "Pizza en 8 trozos. Te comes 3. ¿Qué parte queda?", opts: ["5/8", "3/8", "3/5", "8/5"], a: "5/8", why: "8 − 3 = 5 trozos de 8." }],
+  gen: () => { const n = pick([3, 4, 5, 6, 8, 10]), k = rnd(1, n - 1); const o = new Set([k + "/" + n, n + "/" + k]); while (o.size < 4) o.add(rnd(1, n) + "/" + pick([n, n + 1, n - 1]));
+    return { t: "mcq", q: "¿Qué <i class='nl'>breuk</i> está coloreada?", vis: () => barSVG(n, k), opts: [...o], a: k + "/" + n, why: n + " partes iguales, " + k + " coloreadas." }; } });
+
+L({ id: "gelijkwaardig", b: "getal", nl: "Gelijkwaardige breuken", es: "Fracciones equivalentes",
+  terms: [T("gelijkwaardige breuken", "fracciones equivalentes"), T("vereenvoudigen", "simplificar"), T("een half", "un medio"), T("achtste", "octavo")],
+  steps: () => [
+    { t: "info", q: "Mismo trozo, más cortes", txt: "1/2 y 2/4 ocupan lo mismo: son <i class='nl'>gelijkwaardig</i>.", vis: () => barSVG(2, 1, { h: 34 }) + "<div class='mute'>1/2 · <i class='nl'>een half</i></div><div style='height:6px'></div>" + barSVG(4, 2, { h: 34 }) + "<div class='mute'>2/4</div>",
+      more: "Si cortas cada trozo en 2, tienes el doble de trozos (<i class='nl'>noemer</i> × 2) y el doble coloreados (<i class='nl'>teller</i> × 2). Multiplicar o dividir arriba y abajo por el mismo número no cambia la cantidad." },
+    { t: "equiv", q: "¿Cuántos <i class='nl'>achtsten</i> hay en 3/4?", n: 4, k: 3, opts: ["4/8", "6/8", "3/8"], a: "6/8", why: "Cada cuarto se parte en 2: <i class='nl'>teller</i> y <i class='nl'>noemer</i> × 2 → 6/8." },
+    { t: "num", q: "1/3 = ▢/6", vis: () => barSVG(3, 1, { h: 30 }) + "<div style='height:6px'></div>" + barSVG(6, 0, { h: 30 }), a: 2, why: "La <i class='nl'>noemer</i> se multiplica por 2 (3→6), la <i class='nl'>teller</i> también: 1×2 = 2." },
+    { t: "mcq", q: "¿Cuál NO es igual a 1/2?", opts: ["2/4", "3/6", "4/8", "3/5"], a: "3/5", why: "En 1/2 la <i class='nl'>teller</i> es la mitad de la <i class='nl'>noemer</i>. En 3/5 no: 3 es más que la mitad de 5." },
+    { t: "num", q: "2/5 = ▢/10", a: 4, why: "5 × 2 = 10, así que 2 × 2 = 4." },
+    { t: "mcq", q: "<i class='nl'>Vereenvoudigen</i>: 6/9 = …", opts: ["2/3", "3/6", "1/3", "6/3"], a: "2/3", why: "Divide arriba y abajo entre 3: 6÷3 = 2, 9÷3 = 3.", more: "<i class='nl'>Vereenvoudigen</i> es lo contrario de ampliar: buscas un número que divida a la vez la <i class='nl'>teller</i> y la <i class='nl'>noemer</i>." }],
+  gen: () => { const n = pick([2, 3, 4, 5]), k = rnd(1, n - 1), m = pick([2, 3, 4]);
+    return { t: "num", q: k + "/" + n + " = ▢/" + (n * m), a: k * m, why: "× " + m + " arriba y abajo: " + (k * m) + "/" + (n * m) + "." }; } });
+
+L({ id: "komma", b: "getal", nl: "Kommagetallen", es: "Números decimales",
+  terms: [T("het kommagetal", "el número decimal"), T("de komma", "la coma"), T("een tiende (t)", "una décima"), T("een honderdste (h)", "una centésima"), T("de cent", "el céntimo")],
+  steps: () => [
+    { t: "info", q: "Partir la unidad en 10 y en 100", txt: "Toda la cuadrícula = 1. Una fila = 1 <i class='nl'>tiende</i> = 0,1. Un cuadrito = 1 <i class='nl'>honderdste</i> = 0,01.", vis: () => gridSVG(new Set([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])) + "<div class='mute' style='margin-top:6px'>coloreado: 0,1 + 0,01 = 0,11</div>",
+      more: "En Bélgica los decimales se escriben con <i class='nl'>komma</i>: 3,45. Tras la coma, la primera cifra son <i class='nl'>tienden</i> (t) y la segunda <i class='nl'>honderdsten</i> (h). Es el mismo sistema que el dinero: 1 € = 100 <i class='nl'>cent</i>." },
+    { t: "grid", q: "Colorea 0,4 (toca las filas)", mode: "rows", target: 40, why: "0,4 = 4 <i class='nl'>tienden</i> = 4 filas = 40 cuadritos." },
+    { t: "mcq", q: "¿Qué <i class='nl'>kommagetal</i> muestra la cuadrícula?", vis: () => gridSVG(25), opts: ["0,25", "2,5", "0,025", "25"], a: "0,25", why: "2 filas (0,2) + 5 cuadritos (0,05) = 0,25." },
+    { t: "mcq", q: "3 euro y 45 <i class='nl'>cent</i> son…", opts: ["3,45 €", "34,5 €", "3,045 €", "345 €"], a: "3,45 €", why: "45 cent = 45 centésimas de euro = 0,45 €." },
+    { t: "mcq", q: "7/10 = …", opts: ["0,7", "7,10", "0,07", "7,0"], a: "0,7", why: "7 <i class='nl'>tienden</i>: la cifra 7 va justo detrás de la <i class='nl'>komma</i>." },
+    { t: "mcq", q: "0,5 ▢ 0,45", vis: () => `<div class="row" style="gap:12px">${gridSVG(50).replace('max-width:270px', 'max-width:130px')}${gridSVG(45).replace('max-width:270px', 'max-width:130px')}</div>`, opts: ["<", ">", "="], a: ">", why: "0,5 = 0,50 = 50 cuadritos; 0,45 = 45. ¡Más cifras no significa más grande!",
+      more: "Truco: iguala el número de cifras tras la coma añadiendo ceros (0,5 → 0,50) y compara como números enteros: 50 > 45." }],
+  gen: () => { if (Math.random() < .5) { const k = rnd(1, 99); const o = new Set([dec(k / 100), dec(k / 10), dec(k / 1000), String(k)]); return { t: "mcq", q: k + "/100 = …", opts: [...o], a: dec(k / 100), why: k + " <i class='nl'>honderdsten</i> = " + dec(k / 100) + "." }; }
+    const a = rnd(1, 9) / 10, b = rnd(11, 99) / 100; return { t: "mcq", q: dec(a) + " ▢ " + dec(b), opts: ["<", ">", "="], a: a < b ? "<" : a > b ? ">" : "=", why: "Añade un cero: " + dec(a).padEnd(4, "0") + " frente a " + dec(b) + "." }; } });
+
+/* ---- fases siguientes (previstas) ---- */
+const PLAN = {
+  bew: [["De tafels", "Las tablas de multiplicar"], ["Hoofdrekenen tot 100 000", "Cálculo mental"], ["Cijferend optellen", "Suma en columna"], ["Cijferend aftrekken", "Resta en columna"], ["Cijferend vermenigvuldigen", "Multiplicación en columna"], ["Cijferend delen", "División en columna"], ["Schatten", "Estimar resultados"], ["Delers en veelvouden", "Divisores y múltiplos"]],
+  meten: [["Lengte", "Longitud: mm, cm, m, km"], ["Gewicht", "Peso: g, kg"], ["Inhoud", "Capacidad: ml, cl, dl, l"], ["Tijd", "El reloj y el calendario"], ["Geld", "Euros y céntimos"], ["Omtrek", "Perímetro"], ["Oppervlakte", "Área"], ["Temperatuur", "Temperatura"]],
+  meet: [["Punten, lijnen en rechten", "Puntos y rectas"], ["Evenwijdig en loodrecht", "Paralelas y perpendiculares"], ["Hoeken", "Ángulos"], ["Veelhoeken", "Polígonos"], ["Driehoeken en vierhoeken", "Triángulos y cuadriláteros"], ["De cirkel", "El círculo"], ["Symmetrie", "Simetría"], ["Ruimtefiguren", "Cuerpos geométricos"]]
+};
+for (const b in PLAN) PLAN[b].forEach(([nl, es], i) => L({ id: b + i, b, nl, es, planned: true }));
+const TOTAL = LESSONS.length;
+
+/* ============ progreso ============ */
+const INTERVALS = [1, 3, 7, 14, 30];
+function lp(id) { return S.les[id] || null; }
+function lessonValue(id) {
+  const p = lp(id); if (!p) return 0;
+  if (!p.done) return Math.min(.5, (p.step || 0) / (p.n || 6) * .5);
+  return Math.min(1, .6 + .1 * (p.box || 0));
+}
+function lessonState(id) { const p = lp(id); if (!p) return "nuevo"; if (!p.done) return "empezada"; if ((p.box || 0) >= 4) return "dominada"; return "aprendida"; }
+const STATE_C = { nuevo: "#e7e3da", empezada: "#f6c99a", aprendida: "#f6a04d", dominada: "#2f9e63" };
+function globalPct() { return LESSONS.reduce((s, l) => s + lessonValue(l.id), 0) / TOTAL; }
+function blockPct(b) { const ls = LESSONS.filter(l => l.b === b); return ls.reduce((s, l) => s + lessonValue(l.id), 0) / ls.length; }
+function dueLessons() { const t = today(); return LESSONS.filter(l => { const p = lp(l.id); return p && p.done && p.due && p.due <= t; }).sort((a, b) => lp(a.id).due.localeCompare(lp(b.id).due)); }
+function nextLesson() { return LESSONS.find(l => !l.planned && !(lp(l.id) && lp(l.id).done)); }
+function finishLesson(l, errs, n) {
+  const p = S.les[l.id] = S.les[l.id] || {};
+  p.done = true; p.step = n; p.n = n; p.box = 0; p.errs = errs;
+  p.due = addDays(today(), errs > 1 ? 1 : 2); p.doneAt = today(); markDay(); save();
+}
+function reviewResult(id, ok) {
+  const p = S.les[id]; if (!p) return;
+  if (ok) { p.box = Math.min(5, (p.box || 0) + 1); p.due = addDays(today(), INTERVALS[Math.min(p.box, 4)]); }
+  else { p.box = Math.max(0, (p.box || 0) - 1); p.due = addDays(today(), 1); }
+  save();
+}
+function logError(lessonId, q, given, correct) {
+  S.errors.push({ l: lessonId, q: String(q).replace(/<[^>]+>/g, ""), g: String(given), c: String(correct), d: today() });
+  if (S.errors.length > 60) S.errors = S.errors.slice(-60); save();
+}
+
+/* ============ navegación ============ */
+let stack = [];
+let current = null;
+function go(fn, push = true) { if (push && current) stack.push(current); current = fn; window.scrollTo(0, 0); fn(); }
+function back() { if (!stack.length) return false; current = stack.pop(); window.scrollTo(0, 0); current(); return true; }
+window.w4Back = () => { if (current === renderHome) return false; if (!back()) { go(renderHome, false); } return true; };
+function nav(on) {
+  return `<div class="nav">${[["home", "⌂", "Inicio"], ["words", "Aa", "Woordenlijst"], ["tutor", "?", "Tutor"], ["set", "⚙", "Ajustes"]]
+    .map(([k, i, t]) => `<button data-nav="${k}" class="${k === on ? "on" : ""}"><b>${i}</b>${t}</button>`).join("")}</div>`;
+}
+function bindNav() {
+  document.querySelectorAll("[data-nav]").forEach(b => b.onclick = () => {
+    stack = []; const k = b.dataset.nav;
+    go(k === "home" ? renderHome : k === "words" ? renderWords : k === "tutor" ? () => renderTutor(null) : renderSettings, false);
+  });
+}
+
+/* ============ inicio ============ */
+function ringSVG(p) {
+  const r = 50, c = 2 * Math.PI * r;
+  return `<svg viewBox="0 0 118 118" width="118" height="118"><circle cx="59" cy="59" r="${r}" fill="none" stroke="#e7e3da" stroke-width="12"/>
+  <circle cx="59" cy="59" r="${r}" fill="none" stroke="#e0701a" stroke-width="12" stroke-linecap="round" stroke-dasharray="${c * p} ${c}" transform="rotate(-90 59 59)"/></svg>`;
+}
+let openBlock = "getal";
+function renderHome() {
+  const g = globalPct(), done = LESSONS.filter(l => lp(l.id) && lp(l.id).done).length, mast = LESSONS.filter(l => lessonState(l.id) === "dominada").length;
+  const due = dueLessons(), nxt = nextLesson();
+  const items = Math.min(due.length, 3) * 2;
+  let todayTxt = [];
+  if (items) todayTxt.push(items + " repasos");
+  if (nxt) todayTxt.push("lección nueva: <i>" + esc(nxt.nl) + "</i>");
+  const mins = items + (nxt ? 8 : 0);
+  $("#app").innerHTML = `
+  <h1>Wiskunde 4</h1><div class="mute" style="margin-bottom:14px">Programa del <i class="nl">4de leerjaar</i> · Vlaanderen</div>
+  <div class="card">
+    <div class="hero"><div class="ring">${ringSVG(g)}<div class="pct"><b>${Math.round(g * 100)}%</b><small>del programa</small></div></div>
+    <div><div class="stat"><b>${done}</b> / ${TOTAL} lecciones aprendidas</div><div class="stat"><b>${mast}</b> dominadas (repaso a 14 días)</div><div class="stat"><b>${S.days.length}</b> días de práctica</div></div></div>
+    <div class="map">${LESSONS.map(l => `<div title="${esc(l.nl)}" style="background:${STATE_C[lessonState(l.id)]}"></div>`).join("")}</div>
+    <div class="legend"><span style="--c:#e7e3da">pendiente</span><span style="--c:#f6c99a">empezada</span><span style="--c:#f6a04d">aprendida</span><span style="--c:#2f9e63">dominada</span></div>
+  </div>
+  <div class="today"><b style="font-size:18px">Hoy · ${mins ? "≈ " + mins + " min" : "todo al día"}</b><p>${todayTxt.length ? todayTxt.join(" + ") : "Has completado la fase 1. Vuelve mañana para repasar."}</p>
+    <button class="btn" id="start" ${todayTxt.length ? "" : "disabled"}>Empezar sesión de hoy</button></div>
+  ${BLOCKS.map(b => { const ls = LESSONS.filter(l => l.b === b.id); const pc = blockPct(b.id);
+    return `<div class="block ${openBlock === b.id ? "open" : ""}" style="background:${b.l}" data-b="${b.id}">
+      <div class="bhead"><div class="ico" style="background:${b.c}">${b.ico}</div><div style="flex:1"><div class="bt"><i class="nl" style="color:inherit;font-style:normal">${b.nl}</i></div><div class="bs">${b.es} · ${Math.round(pc * 100)}%${b.phase > 1 ? " · fase " + b.phase : ""}</div>
+      <div class="bprog"><i style="width:${pc * 100}%;background:${b.c}"></i></div></div></div>
+      <div class="lessons">${ls.map(l => `<button class="les ${l.planned ? "lock" : ""}" data-l="${l.id}"><span class="dot" style="background:${STATE_C[lessonState(l.id)]}"></span><span class="lt"><i class="nl">${esc(l.nl)}</i><small>${esc(l.es)}</small></span>${l.planned ? '<span class="tag">pronto</span>' : ""}</button>`).join("")}</div></div>`; }).join("")}
+  ${nav("home")}`;
+  bindNav();
+  $("#start") && ($("#start").onclick = () => startSession());
+  document.querySelectorAll(".block .bhead").forEach(h => h.onclick = () => { const b = h.parentNode.dataset.b; openBlock = openBlock === b ? null : b; renderHome(); });
+  document.querySelectorAll(".les").forEach(b => b.onclick = e => { e.stopPropagation(); const l = LESSONS.find(x => x.id === b.dataset.l); if (l.planned) { toast("Llega en la fase " + BLOCKS.find(x => x.id === l.b).phase); return; } go(() => runLesson(l)); });
+}
+
+/* ============ sesión diaria ============ */
+function startSession() {
+  const due = dueLessons().slice(0, 3);
+  if (due.length) {
+    const items = []; due.forEach(l => { items.push({ ...l.gen(), _l: l.id }); items.push({ ...l.gen(), _l: l.id }); });
+    const ok = {}; due.forEach(l => ok[l.id] = true);
+    go(() => runSteps({ title: "Repaso", sub: "<i class='nl'>herhaling</i> · " + due.map(l => l.nl).join(", "), steps: shuffle(items), lessonId: null, review: true,
+      onAnswer: (st, good) => { if (!good) ok[st._l] = false; },
+      onDone: () => { due.forEach(l => reviewResult(l.id, ok[l.id])); markDay(); const n = nextLesson(); if (n) { stack = []; go(() => runLesson(n), false); } else { stack = []; go(renderHome, false); toast("Repaso terminado"); } } }));
+  } else { const n = nextLesson(); if (n) go(() => runLesson(n)); }
+}
+function runLesson(l) {
+  const steps = l.steps();
+  runSteps({ title: l.nl, sub: l.es, steps, lessonId: l.id, onStep: i => { const p = S.les[l.id] = S.les[l.id] || {}; if (!p.done) { p.step = Math.max(p.step || 0, i); p.n = steps.length; save(); } },
+    onDone: errs => { finishLesson(l, errs, steps.length); stack = []; go(() => renderLessonDone(l, errs), false); } });
+}
+function renderLessonDone(l, errs) {
+  $("#app").innerHTML = `<div class="done"><div class="bigpct">${Math.round(globalPct() * 100)}%</div><div class="mute">del programa completado</div>
+  <h2 style="margin:22px 0 6px">✓ <i class="nl">${esc(l.nl)}</i></h2><div class="mute">${errs ? errs + " fallo" + (errs > 1 ? "s" : "") + " · lo repasarás pronto" : "Sin fallos · primer repaso en 2 días"}</div>
+  <div class="card" style="text-align:left;margin-top:20px"><b>Palabras nuevas</b>${l.terms.map(t => `<div class="term" style="padding:8px 0;margin:0;background:none"><div class="w"><b>${esc(t.nl)}</b><small>${esc(t.es)}</small></div><button class="spk" data-say="${esc(t.nl)}">🔊</button></div>`).join("")}</div></div>
+  <div class="foot"><div><button class="btn" id="home">Volver al inicio</button></div></div>`;
+  document.querySelectorAll("[data-say]").forEach(b => b.onclick = () => speak(b.dataset.say.replace(/\(.*?\)/g, "")));
+  $("#home").onclick = () => { stack = []; go(renderHome, false); };
+}
+
+/* ============ motor de pasos ============ */
+function runSteps(cfg) {
+  let i = 0, errs = 0;
+  const show = () => {
+    if (i >= cfg.steps.length) { cfg.onDone(errs); return; }
+    cfg.onStep && cfg.onStep(i);
+    const ans = (good, st) => { if (!good) errs++; cfg.onAnswer && cfg.onAnswer(st, good); };
+    const nxt = () => { i++; window.scrollTo(0, 0); show(); };
+    current = () => renderStep(cfg, i, ans, nxt);
+    current();
+  };
+  show();
+}
+function renderStep(cfg, i, answered, next) {
+  const st = cfg.steps[i], n = cfg.steps.length;
+  const lessonId = cfg.lessonId || st._l;
+  $("#app").innerHTML = `<div class="top"><button class="x" id="close">✕</button><div class="pbar">${cfg.steps.map((_, j) => `<span class="${j <= i ? "on" : ""}"></span>`).join("")}</div></div>
+  <div class="mute"><i class="nl">${esc(cfg.title)}</i> · ${cfg.sub}</div>
+  <div class="card" style="margin-top:10px"><div class="q">${st.q}</div>${st.txt ? `<div class="txt">${st.txt}</div>` : ""}
+  <div class="vis" id="vis">${st.vis ? st.vis() : ""}</div><div id="body"></div><div id="fb"></div>
+  ${st.more ? `<button class="morebtn" id="morebtn">Explícamelo más ▾</button><div class="more" id="more" style="display:none">${st.more}</div>` : ""}</div>
+  <div class="foot"><div id="foot"></div></div>`;
+  $("#close").onclick = () => { if (confirm("¿Salir? Tu avance en esta lección se guarda.")) { stack = []; go(renderHome, false); } };
+  if (st.more) $("#morebtn").onclick = () => { const m = $("#more"); m.style.display = m.style.display === "none" ? "block" : "none"; };
+  const foot = $("#foot"), body = $("#body");
+  let locked = false;
+  const showFb = ({ good, given, correctTxt }) => {
+    locked = true;
+    $("#fb").innerHTML = `<div class="fb ${good ? "ok" : "bad"}"><b>${good ? pick(["✓ Correcto", "✓ ¡Eso es!", "✓ Bien visto"]) : "✗ Era " + esc(correctTxt)}</b>${st.why || ""}</div>`;
+    foot.innerHTML = `<button class="btn" id="nx">${i + 1 < n ? "Continuar" : "Terminar"}</button>${good ? "" : `<button class="btn ghost" id="ask">Preguntar al tutor</button>`}`;
+    $("#nx").onclick = next;
+    if (!good) $("#ask").onclick = () => go(() => renderTutor({ lesson: lessonId, q: st.q, given, correct: correctTxt, why: st.why }));
+    $("#fb").scrollIntoView({ behavior: "smooth", block: "nearest" });
+  };
+  const finish = (good, given, correctTxt) => {
+    if (locked) return;
+    st._res = { good, given, correctTxt };
+    answered(good, st);
+    if (!good) logError(lessonId, st.q, given, correctTxt);
+    showFb(st._res);
+  };
+  if (st._res) { showFb(st._res); return; }
+  const checkBtn = (label, fn, enabled = true) => { foot.innerHTML = `<button class="btn dark" id="chk" ${enabled ? "" : "disabled"}>${label}</button>`; $("#chk").onclick = fn; };
+
+  if (st.t === "info") { foot.innerHTML = `<button class="btn" id="nx">Entendido</button>`; $("#nx").onclick = next; return; }
+
+  if (st.t === "mcq") {
+    const opts = st.opts.length === 3 && st.opts.includes("<") ? st.opts : shuffle(st.opts);
+    body.innerHTML = `<div class="opts" style="${opts.length === 3 ? "grid-template-columns:1fr 1fr 1fr" : ""}">${opts.map(o => `<button class="opt" data-o="${esc(o)}">${o}</button>`).join("")}</div>`;
+    body.querySelectorAll(".opt").forEach(b => b.onclick = () => {
+      if (locked) return; const g = b.dataset.o, ok = g === st.a;
+      body.querySelectorAll(".opt").forEach(x => { if (x.dataset.o === st.a) x.classList.add("ok"); });
+      if (!ok) b.classList.add("bad");
+      finish(ok, g, st.a);
+    });
+    return;
+  }
+
+  if (st.t === "num") {
+    body.innerHTML = `<div class="numin"><input id="ni" inputmode="decimal" autocomplete="off" placeholder="Tu respuesta"></div>`;
+    const inp = $("#ni");
+    const go2 = () => { const v = parseNum(inp.value); if (isNaN(v)) { toast("Escribe un número"); return; } inp.disabled = true; finish(Math.abs(v - st.a) < 1e-9, fmt(v), fmt(st.a)); };
+    checkBtn("Comprobar", go2); inp.onkeydown = e => { if (e.key === "Enter") go2(); };
+    setTimeout(() => inp.focus(), 50);
+    return;
+  }
+
+  if (st.t === "build") {
+    let val = 0;
+    const draw = () => { $("#vis").innerHTML = `<div class="big" style="margin-bottom:10px">${fmt(val)}</div>` + placeTable(val, true);
+      $("#vis").querySelectorAll(".pm button").forEach(b => b.onclick = () => { if (locked) return; const c = +b.dataset.c, d = String(val).padStart(5, "0").split("").map(Number);
+        d[c] = Math.min(9, Math.max(0, d[c] + +b.dataset.d)); val = +d.join(""); draw(); }); };
+    draw();
+    checkBtn("Comprobar", () => finish(val === st.target, fmt(val), fmt(st.target)));
+    return;
+  }
+
+  if (st.t === "line") {
+    let v = Math.round((st.min + st.max) / 2 / st.tick) * st.tick + (st.min === 0 ? 0 : 0);
+    const snap = st.tick / 2;
+    const draw = () => { $("#vis").innerHTML = lineSVG(st.min, st.max, st.tick, { point: v, pointLabel: "?", labelEvery: st.labelEvery || 1, fs: st.fs }) + `<div class="mute">Arrastra el punto naranja</div>`; bind(); };
+    const bind = () => { const svg = $("#vis svg"); let drag = false;
+      const at = e => { const r = svg.getBoundingClientRect(); const x = (e.clientX - r.left) / r.width * 320; const raw = st.min + (x - 26) / (294 - 26) * (st.max - st.min);
+        v = Math.max(st.min, Math.min(st.max, Math.round(raw / snap) * snap)); const c = svg.querySelector("circle"); const X = 26 + (v - st.min) / (st.max - st.min) * 268; c.setAttribute("cx", X); const t = svg.querySelectorAll("text"); t[t.length - 1].setAttribute("x", X); };
+      svg.onpointerdown = e => { if (locked) return; drag = true; svg.setPointerCapture(e.pointerId); at(e); };
+      svg.onpointermove = e => { if (drag && !locked) at(e); };
+      svg.onpointerup = () => drag = false; };
+    draw();
+    checkBtn("Comprobar", () => { const ok = Math.abs(v - st.target) <= st.tol; $("#vis").innerHTML = lineSVG(st.min, st.max, st.tick, { point: st.target, pointLabel: fmt(st.target), labelEvery: st.labelEvery || 1, fs: st.fs }); finish(ok, "≈ " + fmt(v), fmt(st.target)); });
+    return;
+  }
+
+  if (st.t === "frac") {
+    const on = new Set();
+    const draw = () => { $("#vis").innerHTML = barSVG(st.n, 0) + `<div class="big" style="margin-top:8px">${on.size}/${st.n}</div><div class="mute">Toca las partes para colorearlas</div>`;
+      $("#vis").querySelectorAll("rect[data-i]").forEach(r => { if (on.has(+r.dataset.i)) r.setAttribute("fill", "#f6a04d"); r.onclick = () => { if (locked) return; const k = +r.dataset.i; on.has(k) ? on.delete(k) : on.add(k); draw(); }; }); };
+    draw();
+    checkBtn("Comprobar", () => finish(on.size === st.k, on.size + "/" + st.n, st.k + "/" + st.n));
+    return;
+  }
+
+  if (st.t === "equiv") {
+    let m = 1;
+    const draw = () => { $("#vis").innerHTML = barSVG(st.n, st.k, { h: 40 }) + `<div class="mute" style="margin:4px 0 10px">${st.k}/${st.n}</div>` + barSVG(st.n * m, st.k * m, { h: 40 }) + `<div class="mute" style="margin-top:4px">misma barra cortada en ${st.n * m} · ${st.k * m}/${st.n * m}</div>`; };
+    draw();
+    body.innerHTML = `<input type="range" id="rg" min="1" max="3" step="1" value="1"><div class="row mute" style="justify-content:space-between;font-size:12px"><span>${st.n} trozos</span><span>${st.n * 2} trozos</span><span>${st.n * 3} trozos</span></div>
+    <div class="opts" style="grid-template-columns:1fr 1fr 1fr">${st.opts.map(o => `<button class="opt" data-o="${o}">${o}</button>`).join("")}</div>`;
+    $("#rg").oninput = e => { m = +e.target.value; draw(); };
+    body.querySelectorAll(".opt").forEach(b => b.onclick = () => { if (locked) return; const ok = b.dataset.o === st.a; body.querySelectorAll(".opt").forEach(x => { if (x.dataset.o === st.a) x.classList.add("ok"); }); if (!ok) b.classList.add("bad"); finish(ok, b.dataset.o, st.a); });
+    return;
+  }
+
+  if (st.t === "order") {
+    const picked = [];
+    const items = shuffle(st.items);
+    const draw = () => {
+      body.innerHTML = `<div class="slot">${picked.map(v => `<span>${fmt(v)}</span>`).join(" &lt; ") || '<span class="mute" style="background:none">toca los números en orden</span>'}</div>
+      <div class="ordr">${items.map(v => `<button data-v="${v}" class="${picked.includes(v) ? "used" : ""}">${fmt(v)}</button>`).join("")}</div>
+      ${picked.length ? '<button class="morebtn" id="undo">↶ deshacer</button>' : ""}`;
+      body.querySelectorAll(".ordr button").forEach(b => b.onclick = () => { if (locked || picked.includes(+b.dataset.v)) return; picked.push(+b.dataset.v); draw(); });
+      $("#undo") && ($("#undo").onclick = () => { if (!locked) { picked.pop(); draw(); } });
+      checkBtn("Comprobar", () => { const right = st.items.slice().sort((a, b) => a - b); finish(picked.every((v, j) => v === right[j]), picked.map(fmt).join(" < "), right.map(fmt).join(" < ")); }, picked.length === st.items.length);
+    };
+    draw();
+    return;
+  }
+
+  if (st.t === "grid") {
+    const rows = new Set();
+    const count = () => rows.size * 10;
+    const draw = () => { const f = new Set(); rows.forEach(r => { for (let q = 0; q < 10; q++) f.add(r * 10 + q); });
+      $("#vis").innerHTML = gridSVG(f) + `<div class="big" style="margin-top:8px">${dec(count() / 100)}</div>`;
+      $("#vis").querySelectorAll("rect[data-r]").forEach(r => r.onclick = () => { if (locked) return; const k = +r.dataset.r; rows.has(k) ? rows.delete(k) : rows.add(k); draw(); }); };
+    draw();
+    checkBtn("Comprobar", () => finish(count() === st.target, dec(count() / 100), dec(st.target / 100)));
+    return;
+  }
+}
+
+/* ============ tutor (Claude) ============ */
+const MODEL = "claude-sonnet-5-5";
+let tutorCtx = null;
+function progressSummary() {
+  const done = LESSONS.filter(l => lp(l.id) && lp(l.id).done).map(l => l.nl);
+  const errs = S.errors.slice(-8).map(e => `- [${e.l}] ${e.q} → respondió ${e.g}, correcto ${e.c}`).join("\n");
+  return `Progreso global: ${Math.round(globalPct() * 100)}% del programa. Lecciones aprendidas: ${done.join(", ") || "ninguna"}.\nErrores recientes:\n${errs || "ninguno"}`;
+}
+function systemPrompt() {
+  const l = tutorCtx && LESSONS.find(x => x.id === tutorCtx.lesson);
+  return `Eres el tutor de matemáticas de Tony, un adulto de 46 años, traductor jurídico, bueno en idiomas y que se considera malo en matemáticas. Está aprendiendo el programa de matemáticas del 4º curso de primaria de Flandes (4de leerjaar): Getalbegrip, Bewerkingen, Metend rekenen, Meetkunde.
+
+Cómo enseñas:
+- Método socrático: guía con UNA pregunta corta cada vez para que él descubra el error o la idea. No des la solución final salvo que te la pida explícitamente dos veces o diga «dame la respuesta».
+- Mensajes breves: 1–3 frases. Solo te extiendes si pide «explícamelo más».
+- Habla en español, pero usa el término clave en neerlandés de Flandes en cursiva con *asteriscos* y su traducción la primera vez (p. ej. *teller* (numerador)). Usa la notación belga: coma decimal (3,45) y espacio de millares (45 306).
+- Apóyate en imágenes mentales concretas (barras, la tabla de posiciones TD D H T E, la recta numérica, dinero) antes de los símbolos.
+- Trátalo como adulto: sin infantilizar, sin elogios exagerados. Si acierta, confirma en pocas palabras y por qué.
+- No inventes contenidos de fuera del programa de 4º salvo que pregunte.
+
+${progressSummary()}
+${l ? `\nEstá en la lección «${l.nl}» (${l.es}).` : ""}${tutorCtx && tutorCtx.q ? `\nEjercicio en el que falló: «${String(tutorCtx.q).replace(/<[^>]+>/g, "")}». Su respuesta: ${tutorCtx.given}. Correcta: ${tutorCtx.correct}. Empieza preguntándole cómo lo ha pensado o señalando con una pregunta dónde mirar; no reveles la respuesta.` : ""}`;
+}
+function md(s) { return esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/\*(.+?)\*/g, "<em>$1</em>"); }
+function renderTutor(ctx) {
+  if (ctx) { tutorCtx = ctx; S.chat = []; save(); }
+  const key = getKey();
+  const ctxL = tutorCtx && LESSONS.find(x => x.id === tutorCtx.lesson);
+  $("#app").innerHTML = `<div class="top">${stack.length ? '<button class="x" id="bk">‹</button>' : ""}<div><h2>Tutor</h2><div class="mute">Te guía con preguntas · no te da la solución</div></div></div>
+  ${ctxL ? `<div class="ctx">Sobre: <i class="nl">${esc(ctxL.nl)}</i>${tutorCtx.q ? " · «" + esc(String(tutorCtx.q).replace(/<[^>]+>/g, "")) + "»" : ""} <button class="morebtn" id="clr" style="margin-left:6px">nueva conversación</button></div>` : ""}
+  ${key ? "" : `<div class="card" style="margin-top:12px"><b>Conecta el tutor</b><div class="mute" style="margin:6px 0">Pega tu clave de API de Anthropic (empieza por <code>sk-ant-</code>). Se guarda solo en este teléfono.</div><input class="field" id="k" placeholder="sk-ant-…"><button class="btn" id="ksave">Guardar</button></div>`}
+  <div class="chat" id="chat" style="margin-top:12px"></div>
+  <div class="foot ${stack.length ? "" : "navd"}"><div><div class="tchips">${(tutorCtx && tutorCtx.q ? ["No sé por dónde empezar", "Dame una pista", "Explícamelo más"] : ["Explícame la positietabel", "¿Qué es una breuk?", "Ponme un ejercicio"]).map(c => `<button>${c}</button>`).join("")}</div>
+  <div class="tin"><textarea id="ti" placeholder="Escribe tu duda…"></textarea><button id="send">↑</button></div></div></div>
+  ${stack.length ? "" : nav("tutor")}`;
+  if (!stack.length) bindNav(); else $("#bk").onclick = back;
+  $("#clr") && ($("#clr").onclick = () => { tutorCtx = null; S.chat = []; save(); renderTutor(null); });
+  $("#ksave") && ($("#ksave").onclick = () => { const v = $("#k").value.trim(); if (!v.startsWith("sk-")) { toast("Esa clave no parece válida"); return; } setKey(v); renderTutor(null); });
+  const chat = $("#chat");
+  const draw = () => { chat.innerHTML = (S.chat.length ? "" : `<div class="msg bot">${tutorCtx && tutorCtx.q ? "Veamos este ejercicio juntos. ¿Cómo lo has pensado?" : "Hola, Tony. Pregúntame lo que quieras del programa; te iré guiando con preguntas."}</div>`) +
+    S.chat.map(m => `<div class="msg ${m.role === "user" ? "me" : "bot"}">${m.role === "user" ? esc(m.content) : md(m.content)}</div>`).join(""); window.scrollTo(0, document.body.scrollHeight); };
+  draw();
+  const send = async txt => {
+    txt = (txt || "").trim(); if (!txt) return;
+    if (!getKey()) { toast("Primero guarda tu clave"); return; }
+    S.chat.push({ role: "user", content: txt }); save(); draw(); $("#ti").value = "";
+    const wait = document.createElement("div"); wait.className = "msg bot"; wait.textContent = "…"; chat.appendChild(wait); window.scrollTo(0, document.body.scrollHeight);
+    try {
+      const msgs = S.chat.slice(-20);
+      if (msgs[0].role !== "user") msgs.shift();
+      const r = await fetch("https://api.anthropic.com/v1/messages", { method: "POST",
+        headers: { "content-type": "application/json", "x-api-key": getKey(), "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
+        body: JSON.stringify({ model: MODEL, max_tokens: 700, system: systemPrompt(), messages: msgs }) });
+      const j = await r.json();
+      if (!r.ok) throw new Error(j.error && j.error.message || ("Error " + r.status));
+      const out = j.content.filter(c => c.type === "text").map(c => c.text).join("\n");
+      S.chat.push({ role: "assistant", content: out }); save(); draw();
+    } catch (e) { wait.remove(); S.chat.pop(); save(); draw(); $("#ti").value = txt; toast("No he podido contactar con el tutor: " + e.message); }
+  };
+  $("#send").onclick = () => send($("#ti").value);
+  document.querySelectorAll(".tchips button").forEach(b => b.onclick = () => send(b.textContent));
+}
+
+/* ============ woordenlijst ============ */
+function renderWords() {
+  const learned = LESSONS.filter(l => !l.planned && lp(l.id) && lp(l.id).done);
+  const pending = LESSONS.filter(l => !l.planned && !(lp(l.id) && lp(l.id).done));
+  $("#app").innerHTML = `<h1>Woordenlijst</h1><div class="mute" style="margin-bottom:14px">Las palabras clave en neerlandés · toca 🔊 para oírlas</div>
+  ${learned.length ? learned.map(l => `<div class="mute" style="margin:14px 0 6px;font-weight:600">${esc(l.nl)}</div>` + l.terms.map(t => `<div class="term"><div class="w"><b>${esc(t.nl)}</b><small>${esc(t.es)}</small></div><button class="spk" data-say="${esc(t.nl)}">🔊</button></div>`).join("")).join("")
+    : `<div class="card mute">Aquí irán apareciendo las palabras de cada lección que termines.</div>`}
+  ${pending.length ? `<div class="mute" style="margin-top:18px">Por desbloquear: ${pending.reduce((s, l) => s + l.terms.length, 0)} palabras más en la fase 1.</div>` : ""}
+  ${nav("words")}`;
+  bindNav();
+  document.querySelectorAll("[data-say]").forEach(b => b.onclick = () => speak(b.dataset.say.replace(/\(.*?\)/g, "")));
+}
+
+/* ============ ajustes ============ */
+function renderSettings() {
+  const k = getKey();
+  $("#app").innerHTML = `<h1>Ajustes</h1>
+  <div class="card" style="margin-top:14px"><b>Tutor Claude</b><div class="mute" style="margin:6px 0">${k ? "Clave guardada: " + esc(k.slice(0, 10)) + "…" : "Sin clave de API"}</div>
+  <input class="field" id="k" placeholder="sk-ant-…"><button class="btn dark" id="ks">Guardar clave</button>${k ? '<button class="btn ghost" id="kd" style="margin-top:8px">Borrar clave</button>' : ""}</div>
+  <div class="card"><b>Tu progreso</b><div class="mute" style="margin:6px 0">${Math.round(globalPct() * 100)}% del programa · ${S.errors.length} errores registrados para el tutor</div>
+  <button class="btn ghost" id="exp">Copiar copia de seguridad</button><button class="btn ghost" id="imp" style="margin-top:8px">Restaurar copia</button><button class="btn ghost" id="rst" style="margin-top:8px;color:#d64545">Borrar todo el progreso</button></div>
+  <div class="mute" style="font-size:12px;margin-top:10px">Wiskunde 4 · fase 1 (<i class="nl">Getalbegrip</i>). Programa: minimumdoelen wiskunde, einde 4de leerjaar (Vlaanderen).</div>
+  ${nav("set")}`;
+  bindNav();
+  $("#ks").onclick = () => { const v = $("#k").value.trim(); if (!v.startsWith("sk-")) { toast("Esa clave no parece válida"); return; } setKey(v); toast("Clave guardada"); renderSettings(); };
+  $("#kd") && ($("#kd").onclick = () => { setKey(""); renderSettings(); });
+  $("#exp").onclick = async () => { const t = JSON.stringify(S); try { await navigator.clipboard.writeText(t); toast("Copiado al portapapeles"); } catch (e) { prompt("Copia este texto:", t); } };
+  $("#imp").onclick = () => { const t = prompt("Pega aquí tu copia:"); if (!t) return; try { const o = JSON.parse(t); if (!o.les) throw 0; S = o; load(); localStorage.setItem(KEY, JSON.stringify(o)); load(); toast("Progreso restaurado"); renderSettings(); } catch (e) { toast("Esa copia no es válida"); } };
+  $("#rst").onclick = () => { if (confirm("¿Borrar todo el progreso? No se puede deshacer.")) { localStorage.removeItem(KEY); load(); toast("Progreso borrado"); renderSettings(); } };
+}
+
+go(renderHome, false);
+</script>
+</body>
+</html>
