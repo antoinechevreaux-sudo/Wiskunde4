@@ -2,10 +2,13 @@
 
 App para aprender el programa de matemáticas del *4de leerjaar* de Flandes, con explicaciones en español y las palabras clave en neerlandés.
 
-- **Fase 1 – Getalbegrip** (disponible): *positietabel*, *splitsen*, *getallenas*, *vergelijken*, *afronden*, *breuken*, *gelijkwaardige breuken*, *kommagetallen*.
-- **Fases 2–4** (previstas): *Bewerkingen*, *Metend rekenen*, *Meetkunde*.
+El programa completo según los *minimumdoelen* de wiskunde (einde 4de leerjaar), en 53 lecciones y 6 bloques: *Getalbegrip*, *Bewerkingen*, *Meten en metend rekenen*, *Meetkunde*, *Statistiek en kansrekenen* y *Vraagstukken*.
 
-Incluye un indicador global del programa (32 lecciones, de «pendiente» a «dominada»), repaso espaciado (*herhaling*), una *woordenlijst* con pronunciación en neerlandés de Bélgica y un tutor Claude que guía con preguntas.
+- Acceso libre a cualquier lección; cada una con lección guiada y práctica sin fin con 3 niveles de dificultad que se adaptan.
+- Una *toets* (evaluación) al final de cada bloque, con corrección y lecciones para repasar.
+- Botón «atrás» en todos los ejercicios.
+- Indicador global del programa (lecciones + toetsen), repaso espaciado (*herhaling*), laboratorio interactivo de decimales.
+- *Woordenlijst* con buscador y pronunciación en neerlandés de Bélgica, y un tutor Claude que guía con preguntas.
 
 ## Descargar la APK
 
