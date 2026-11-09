@@ -4,6 +4,6 @@ import pathlib, shutil
 raiz = pathlib.Path(__file__).resolve().parent.parent
 web, assets = raiz / "web", raiz / "app/src/main/assets"
 assets.mkdir(parents=True, exist_ok=True)
-for nombre in ("index.html", "Outfit.ttf"):
+for nombre in ("index.html", "teach.js", "Outfit.ttf"):
     shutil.copy(web / nombre, assets / nombre)
 print("Assets listos:", sorted(p.name for p in assets.iterdir()))

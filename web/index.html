@@ -53,6 +53,10 @@ h1{font-size:26px;font-weight:700}h2{font-size:21px;font-weight:700;line-height:
 .tag.ok{background:var(--grl);color:var(--gr)}
 .q{font-size:20px;font-weight:700;line-height:1.3;margin-bottom:6px}
 .txt{font-size:16px;line-height:1.45;margin-bottom:8px}
+.txt p{margin-bottom:9px}.txt ul,.txt ol{padding-left:22px;margin:4px 0 10px}.txt li{margin-bottom:4px}
+.ex{background:#f6f3ee;border-left:4px solid var(--or);border-radius:0 12px 12px 0;padding:10px 12px;margin:8px 0 12px;font-size:15px;line-height:1.55}
+.warn{background:var(--rdl);color:#8f2b2b;border-radius:12px;padding:10px 12px;margin:8px 0;font-size:14.5px;line-height:1.45}.warn b{display:block;margin-bottom:2px}
+.q.th{font-size:21px;color:#9a4a0b}
 .more{background:#f6f3ee;border-radius:12px;padding:12px;font-size:15px;line-height:1.45;margin-top:8px}
 .morebtn{font-size:13px;color:var(--or);font-weight:600;margin-top:6px}
 .vis{margin:12px 0;display:flex;flex-direction:column;align-items:center}
@@ -125,6 +129,7 @@ svg text{font-family:Outfit,system-ui,sans-serif}
 </head>
 <body>
 <div id="app"></div>
+<script src="teach.js"></script>
 <script>
 "use strict";
 /* ================= utilidades ================= */
@@ -909,7 +914,7 @@ function renderLesson(id) {
   const l = lessonById(id), p = lp(id), pr = S.prac[id], b = BLOCKS.find(x => x.id === l.b);
   $("#app").innerHTML = topBar(N(esc(l.nl)), esc(l.es)) +
   `<div class="card"><div class="row" style="justify-content:space-between"><span class="tag" style="background:${STATE_C[lessonState(id)]};color:#1d2433">${lessonState(id)}</span><span class="mute">${Math.round(lessonValue(id) * 100)}% · ${pr ? pr.ok + " aciertos practicando" : "sin práctica aún"}</span></div>
-  <div class="grid2" style="margin-top:12px"><button class="btn sm" id="ll">${p && p.done ? "Repetir lección" : "Empezar lección"}</button><button class="btn sm dark" id="lp">Practicar ∞</button></div>
+  <button class="btn sm ghost" id="th" style="margin-top:12px">📖 Leer la explicación</button><div class="grid2" style="margin-top:8px"><button class="btn sm" id="ll">${p && p.done ? "Repetir lección" : "Empezar lección"}</button><button class="btn sm dark" id="lp">Practicar ∞</button></div>
   ${l.lab ? `<button class="btn sm ghost" id="lab" style="margin-top:8px">Abrir laboratorio de decimales</button>` : ""}
   <div class="mute" style="font-size:12px;margin-top:10px">Practicar ∞: ejercicios sin fin que suben de nivel (●○○ → ●●●) cuando aciertas seguido.</div></div>
   <div class="card"><b>Palabras clave</b>${l.terms.map(t => `<div class="term" style="padding:8px 0;margin:0;background:none"><div class="w"><b>${esc(t.nl)}</b><small>${esc(t.es)}</small></div><button class="spk" data-say="${esc(t.nl)}">🔊</button></div>`).join("")}</div>
@@ -917,6 +922,7 @@ function renderLesson(id) {
   bindNav(); bindBack();
   document.querySelectorAll("[data-say]").forEach(x => x.onclick = () => speak(x.dataset.say));
   $("#ll").onclick = () => go(() => runLesson(l));
+  $("#th").onclick = () => openTheory(l);
   $("#lp").onclick = () => go(() => runEndless([l], l.nl, l.es));
   $("#ask").onclick = () => go(() => renderTutor({ lesson: id }));
   if (l.lab) $("#lab").onclick = () => go(() => runSteps({ title: "Laboratorio", sub: "kommagetallen", steps: [{ t: "declab", q: "Laboratorio de decimales" }], onDone: () => back() }));
@@ -932,8 +938,11 @@ function startSession() {
       onDone: () => { due.forEach(l => reviewResult(l.id, ok[l.id])); markDay(); const n = nextLesson(); stack = []; if (n) go(() => runLesson(n), false); else { go(renderHome, false); toast("Repaso terminado"); } } }));
   } else { const n = nextLesson(); if (n) go(() => runLesson(n)); }
 }
+const theory = l => TEACH[l.id] ? TEACH[l.id]() : l.intro().filter(s => s.t === "info");
+function lessonIntro(l) { const it = l.intro(); return TEACH[l.id] ? TEACH[l.id]().concat(it.filter((s, i) => !(i === 0 && s.t === "info"))) : it; }
+function openTheory(l) { go(() => runSteps({ title: l.nl, sub: "teoría", steps: theory(l), onDone: () => back() || home() })); }
 function runLesson(l) {
-  const lvs = [1, 1, 2, 2, 3, 3], intro = l.intro(), practice = lvs.map(lv => genItem(l, lv)), steps = intro.concat(practice);
+  const lvs = [1, 1, 2, 2, 3, 3], intro = lessonIntro(l), practice = lvs.map(lv => genItem(l, lv)), steps = intro.concat(practice);
   runSteps({ title: l.nl, sub: l.es, steps, lessonId: l.id,
     onStep: i => { const p = S.les[l.id] = S.les[l.id] || {}; if (!p.done) { p.step = Math.max(p.step || 0, i); p.n = steps.length; save(); } },
     onDone: errs => { finishLesson(l, errs, steps.length); stack = []; go(() => renderLessonDone(l, errs), false); } });
@@ -997,7 +1006,7 @@ function renderStep(cfg, i, answered, next, prev) {
   const srcL = st._l && lessonById(st._l);
   $("#app").innerHTML = `<div class="top"><button class="x" id="close" aria-label="Salir">✕</button><button class="x" id="prev" aria-label="Anterior" ${i ? "" : "disabled"}>‹</button>${head}</div>
   <div class="mute">${N(esc(cfg.title))} · ${cfg.sub}${(cfg.endless || cfg.exam) && srcL && cfg.title !== srcL.nl ? " · " + N(esc(srcL.nl)) : ""} ${!cfg.endless && lvl ? " · " + lvl : ""}${cfg.exam ? ` · ${i + 1}/${n}` : ""}</div>
-  <div class="card" style="margin-top:10px"><div class="q">${st.q}</div>${st.txt ? `<div class="txt">${st.txt}</div>` : ""}
+  <div class="card" style="margin-top:10px"><div class="q ${st.theory ? "th" : ""}">${st.q}</div>${st.txt ? `<div class="txt">${st.txt}</div>` : ""}
   <div class="vis" id="vis">${st.vis ? st.vis() : ""}</div><div id="body"></div><div id="fb"></div>
   ${st.more ? `<button class="morebtn" id="morebtn">Explícamelo más ▾</button><div class="more" id="more" style="display:none">${st.more}</div>` : ""}</div>
   <div class="foot"><div id="foot"></div></div>`;
@@ -1010,8 +1019,9 @@ function renderStep(cfg, i, answered, next, prev) {
     locked = true;
     if (cfg.exam) $("#fb").innerHTML = `<div class="fb neu"><b>Respuesta guardada: ${esc(given)}</b>Verás la corrección al final.</div>`;
     else $("#fb").innerHTML = `<div class="fb ${good ? "ok" : "bad"}"><b>${good ? pick(["✓ Correcto", "✓ ¡Eso es!", "✓ Bien visto"]) : "✗ Era " + esc(correctTxt)}</b>${st.why || ""}</div>`;
-    foot.innerHTML = `<button class="btn" id="nx">${cfg.endless ? "Siguiente" : i + 1 < n ? "Continuar" : "Terminar"}</button>${good || cfg.exam ? "" : `<button class="btn ghost" id="ask">Preguntar al tutor</button>`}`;
+    foot.innerHTML = `<button class="btn" id="nx">${cfg.endless ? "Siguiente" : i + 1 < n ? "Continuar" : "Terminar"}</button>${good || cfg.exam ? "" : `<div class="grid2"><button class="btn ghost sm" id="thy">📖 Teoría</button><button class="btn ghost sm" id="ask">Preguntar al tutor</button></div>`}`;
     $("#nx").onclick = next;
+    if (!good && !cfg.exam) $("#thy").onclick = () => openTheory(lessonById(lessonId));
     if (!good && !cfg.exam) $("#ask").onclick = () => go(() => renderTutor({ lesson: lessonId, q: st.q, given, correct: correctTxt, why: st.why }));
     if ($("#fb").scrollIntoView) $("#fb").scrollIntoView({ behavior: "smooth", block: "nearest" });
   };
@@ -1019,7 +1029,7 @@ function renderStep(cfg, i, answered, next, prev) {
   const checkBtn = (label, fn, en = true) => { foot.innerHTML = `<button class="btn dark" id="chk" ${en ? "" : "disabled"}>${label}</button>`; $("#chk").onclick = fn; };
   const markOpts = (g) => { if (cfg.exam) { body.querySelectorAll(".opt").forEach(x => { if (x.dataset.o === g) x.classList.add("sel"); }); return; } body.querySelectorAll(".opt").forEach(x => { if (x.dataset.o === st.a) x.classList.add("ok"); else if (x.dataset.o === g) x.classList.add("bad"); }); };
 
-  if (st.t === "info") { foot.innerHTML = `<button class="btn" id="nx">Entendido</button>`; $("#nx").onclick = next; return; }
+  if (st.t === "info") { foot.innerHTML = `<button class="btn" id="nx">${st.theory && cfg.steps[i + 1] && cfg.steps[i + 1].theory ? "Siguiente" : "Entendido"}</button>`; $("#nx").onclick = next; return; }
   if (st.t === "declab") { decLab($("#vis")); foot.innerHTML = `<button class="btn" id="nx">${cfg.steps.length === 1 ? "Cerrar" : "Continuar"}</button>`; $("#nx").onclick = next; return; }
 
   if (st.t === "mcq") {
